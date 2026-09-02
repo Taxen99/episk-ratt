@@ -130,7 +130,7 @@ const questions = [
 		if (err <= 3) return 3;
 		return 0;
 	}),
-	new MultiChoiceQuestion(4, 2, 3),
+	new MultiChoiceQuestion(4, 2, 5),
 	new JudgePointsQuestion("meter", true, n => {
 		const CORRECT = 1.496 * (10**11);
 		const err = storleksordningar_fel(CORRECT, n);
@@ -144,13 +144,13 @@ const questions = [
 		if (Math.abs(n - CORRECT) <= 100) return 4;
 		return 0
 	}),
-	new RightWrongQuestion("Ja", 1),
-	new ManualQuestion("Indien/Polen/Ungern ger +5. Alla länder utom USA, Ryssland, Japan, Kanada, Italien, Frankrike, Tyskland, Saudiarabien, Förenade Arabemiraten, Indien, Polen, Ungern, Belarus, Belgien, Brasilien, Danmark, Storbritannien, Israel, Kazakstan, Malaysia, Nederländerna, Sydafrika, Sydkorea, Spanien, Sverige och Turkiet ger -6 poäng"),
+	new RightWrongQuestion("Ja", 5),
+	new ManualQuestion("Indien/Polen/Ungern ger +5. Alla länder utom USA, Ryssland, Japan, Kanada, Italien, Frankrike, Tyskland, Saudiarabien, Förenade Arabemiraten, Indien, Polen, Ungern, Belarus, Belgien, Brasilien, Danmark, Storbritannien, Israel, Kazakstan, Malaysia, Nederländerna, Sydafrika, Sydkorea, Spanien, Sverige och Turkiet ger -6 poäng. Uppsats ger upp till 20 poäng."),
 	new MultiChoiceQuestion(4, 1, 3),
 	new RightWrongQuestion("Solen", 3),
 	new RightWrongQuestion("3", 15),
-	new ManualQuestion("detta är jobbigt, fråga ai eller något"),
-	new ManualQuestion("detta är jobbigt, kolla manuellt"),
+	new ManualQuestion("detta är jobbigt, fråga ai eller något. +1 poäng per korrekt ordnad planet."),
+	new ManualQuestion("detta är jobbigt, kolla manuellt. +1 poäng per förkortning."),
 	new RightWrongQuestion("1990", 5),
 	new ManualQuestion("+5 poäng för Edwin. +5 för tele=fjärran. +5 för skopein=betrakta/titta på/etc"),
 	new JudgePointsQuestion("bokstav", false, x => {
@@ -160,7 +160,7 @@ const questions = [
 		return 0;
 	}),
 	new ManualQuestion("+2 om gigaljusår skrivs. +10 om 9,5*10^24 meter skrivs."),
-	new ManualQuestion("Björn, ge poäng här!!"),
+	new ManualQuestion("Rätt ordning är Improving, Colonizing, Mineral, Alien, Discontinue, Faraway, Other. +5 om Improving är rätt, +2 för rest."),
 	new ManualQuestion("googla burh (1 poäng per astronaut. Vidare -0.1 poäng ifall felstavat, +10 poäng ifall fransk.)"),
 	new JudgePointsQuestion("naturliga logaritmen av antalet", true, l => {
 		const CORRECT = 184.2068074395237;
@@ -178,9 +178,9 @@ const questions = [
 	}),
 	new FuckedUp(),
 	new JudgePointsQuestion("lista av ord.", false, words => {
-		words = words.split(",").map(w => w.trim().toLowerCase());
+		words = words.split(/[, ]/).map(w => w.trim().toLowerCase());
 		const REAL_WORDS = [["General", "a"], ["relativity", "a"], ["general", "a"], ["theory", "a"], ["of", "a"], ["relativity", "a"], ["Einstein", "s"], ["Gravity", "i"], ["gravitation", "p"], ["Albert", "i"], ["Einstein", "i"], ["1916", "a"], ["gravitation", "o"], ["modern", "p"], ["general", "g"], ["relativity", "g"], ["special", "a"], ["relativity", "a"], ["universal", "p"], ["gravitation", "p"], ["gravity", "a"], ["space", "a"], ["time", "o"], ["dimensional", "i"], ["spacetime", "i"], ["curvature", "o"], ["spacetime", "i"], ["Einstein", "f"], ["spacetime", "t"], ["matter", "h"], ["move", "t"], ["matter", "t"], ["spacetime", "h"], ["curve", "w"], ["general", "v"], ["relativity", "v"]]
-			.map(([word, letter]) => [word, (letter.toLowerCase().charCodeAt(0) - 96) % 7]);
+			.map(([word, letter]) => [word.toLowerCase(), (letter.toLowerCase().charCodeAt(0) - 96) % 7]);
 		const REALER_WORDS = {};
 		for (const [w, k] of REAL_WORDS) {
 			if (w in REALER_WORDS) {
@@ -191,12 +191,14 @@ const questions = [
 		}
 		let REALEST_WORDS = [];
 		for (let k = 0; k < 7; k++) {
-			const tmp = REALEST_WORDS.filter(([_w, word_k]) => word_k == k).map(([w, _k]) => w.toLowerCase()).sort();
+			const tmp = Object.entries(REALER_WORDS).filter(([_w, word_k]) => (word_k % 7) == k).map(([w, _k]) => w.toLowerCase()).sort();
 			REALEST_WORDS = [...REALEST_WORDS, ...tmp];
 		}
+		// console.log(REALEST_WORDS);
 
 		const filtered_words = [...new Set(words.filter(x => REALEST_WORDS.includes(x)))];
 		const order = filtered_words.map(x => REALEST_WORDS.indexOf(x));
+		console.log(filtered_words);
 		// vibed from chatgpt
 		function longestIncreasingSubsequence(nums) {
 			if (nums.length === 0) return 0;
@@ -213,7 +215,7 @@ const questions = [
 
 			return Math.max(...dp);
 		}
-		return longestIncreasingSubsequence(order) * 2;
+		return longestIncreasingSubsequence(order) * 5;
 	}),
 	new JudgePointsQuestion("bli lars en minut!!. skall skriva in 'A','B','C','D','E' eller 'F'. rätt svar enligt chatgpt är 1440 år", false, b => {
 		if (b.toLowerCase() == "a") return 20;
