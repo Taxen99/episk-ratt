@@ -162,8 +162,8 @@ const questions = [
 	new ManualQuestion("+2 om gigaljusår skrivs. +10 om 9,5*10^24 meter skrivs."),
 	new ManualQuestion("Rätt ordning är Improving, Colonizing, Mineral, Alien, Discontinue, Faraway, Other. +5 om Improving är rätt, +2 för rest."),
 	new ManualQuestion("googla burh (1 poäng per astronaut. Vidare -0.1 poäng ifall felstavat, +10 poäng ifall fransk.)"),
-	new JudgePointsQuestion("naturliga logaritmen av antalet", true, l => {
-		const CORRECT = 184.2068074395237;
+	new JudgePointsQuestion("10-logaritmen av antalet", true, l => {
+		const CORRECT = 80;
 		return 13 - Math.abs(CORRECT - l) / 2
 	}),
 	new RightWrongQuestion("0", 1),
@@ -252,6 +252,7 @@ const questions = [
 	total.innerHTML = "total: ";
 	container.appendChild(total);
 	doneb.onclick = () => {
+		console.clear();
 		let score = 0;
 		let exactly_0_points_n = 0;
 		for (let i = 0; i < questions.length; i++) {
@@ -260,12 +261,15 @@ const questions = [
 				if ([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31].includes(exactly_0_points_n)) {
 					score -= 10;
 					q.li.querySelector("span:last-child").innerHTML = ` || ${-10} points`;
-				}
+					console.log(i, "special -10");
+				} else
+					console.log(i, "nospecial", exactly_0_points_n);
 			} else {
 				let points = q.getPoints();
 				q.li.querySelector("span:last-child").innerHTML = ` || ${points} points`;
 				score += points;
 				if (points == 0) exactly_0_points_n += 1;
+				console.log(i, points, score);
 			}
 		}
 		total.innerHTML = "total: " + score;
